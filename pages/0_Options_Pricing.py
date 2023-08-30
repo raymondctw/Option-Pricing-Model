@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import sys
 
 from Model import OptionsPricing
@@ -63,6 +64,41 @@ pricing_results['Vega(1%)'] = [vega, vega * multiplier * qty]
 pricing_results['Rho(1%)'] = [rho, rho * multiplier * qty]
 
 st.dataframe(pricing_results, use_container_width=True)
+
+st.divider()
+
+
+st.write(f"### Position Matrix")
+value_input = st.selectbox('Value of Matrix',('Premium', 'Delta', 'Gamma(1%)', 'Theta(1d)', 'Vega(1%)', 'Rho(1%)'))
+
+price_range = np.arange(s*0.7, s*1.3+1, 1)
+time_range = np.arange(1, t+1, 1)
+
+pricing_matrix = pd.DataFrame(columns = time_range, index = price_range)
+
+for t in time_range:
+    for s in price_range:
+        if value_input == 'Premium':
+            pricing_matrix.loc[s,t] = int(Calculator.premium(s, k, t/252, r/100, sigma/100, option_type) * multiplier * qty)
+        elif value_input == 'Delta':
+            pricing_matrix.loc[s,t] = int(Calculator.delta(s, k, t/252, r/100, sigma/100, option_type) * s * multiplier * qty)
+        elif value_input == 'Gamma(1%)':
+            pricing_matrix.loc[s,t] = int(Calculator.gamma_one_percent(s, k, t/252, r/100, sigma/100, option_type) * s * multiplier * qty)
+        elif value_input == 'Theta(1d)':
+            pricing_matrix.loc[s,t] = int(Calculator.theta_one_day(s, k, t/252, r/100, sigma/100, option_type) * multiplier * qty)
+        elif value_input == 'Vega(1%)':
+            pricing_matrix.loc[s,t] = int(Calculator.vega_one_percent(s, k, t/252, r/100, sigma/100, option_type) * multiplier * qty)
+        elif value_input == 'Rho(1%)':
+            pricing_matrix.loc[s,t] = int(Calculator.rho_one_percent(s, k, t/252, r/100, sigma/100, option_type) * multiplier * qty)
+        else:
+            sys.exit("Error! Please check value input.")
+
+pricing_matrix = pricing_matrix.sort_index(ascending=False)
+
+st.dataframe(pricing_matrix, use_container_width=True, height = 800)
+
+
+
 
 st.divider()
 
