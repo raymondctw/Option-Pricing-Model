@@ -42,7 +42,8 @@ print(premium)
 ```
 3.982731793716823
 ```
-
+### Web UI with Streamlit
+![alt](WebUI.png)
 
 
 ## Implied Volatility
