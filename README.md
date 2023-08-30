@@ -68,7 +68,8 @@ print(ImpliedVol)
 ```
 0.2170691314697266
 ```
-
+### Web UI with Streamlit
+![alt](WebUI_impvol.png)
 
 ## Greeks
 The "Greeks" are a set of risk measures and sensitivities that help traders and investors understand how changes in different variables can impact the value of options. These measures are derived from the Black-Scholes model and provide valuable insights into the behavior of options under various market conditions.
