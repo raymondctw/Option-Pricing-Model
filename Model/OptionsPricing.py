@@ -56,12 +56,20 @@ class BlackScholesModel:
             float: theoretical option price (premium)
         """
 
-        if option_type in ['Call', 'call', 'C', 'c']:
-            return s * norm.cdf(self.d1(s, k, t, r, sigma)) - k * np.exp(-r * t) * norm.cdf(self.d2(s, k, t, r, sigma))
-        elif option_type in ['Put', 'put', 'P', 'p']:
-            return k * np.exp(-r * t) * norm.cdf(-self.d2(s, k, t, r, sigma)) - s * norm.cdf(-self.d1(s, k, t, r, sigma))
+        if t == 0:
+            if option_type in ['Call', 'call', 'C', 'c']:
+                return max(s - k, 0)
+            elif option_type in ['Put', 'put', 'P', 'p']:
+                return max(k - s, 0)
+            else:
+                raise ValueError('Option type must be either Call or Put')
         else:
-            raise ValueError('Option type must be either Call or Put')
+            if option_type in ['Call', 'call', 'C', 'c']:
+                return s * norm.cdf(self.d1(s, k, t, r, sigma)) - k * np.exp(-r * t) * norm.cdf(self.d2(s, k, t, r, sigma))
+            elif option_type in ['Put', 'put', 'P', 'p']:
+                return k * np.exp(-r * t) * norm.cdf(-self.d2(s, k, t, r, sigma)) - s * norm.cdf(-self.d1(s, k, t, r, sigma))
+            else:
+                raise ValueError('Option type must be either Call or Put')
     
     def delta(self, s: float, k: float, t: float, r: float, sigma: float, option_type: str):
         """Calculate delta in Black-Scholes-Merton model
@@ -78,7 +86,6 @@ class BlackScholesModel:
         Returns:
             float: delta
         """
-
         if option_type in ['Call', 'call', 'C', 'c']:
             return norm.cdf(self.d1(s, k, t, r, sigma))
         elif option_type in ['Put', 'put', 'P', 'p']:
@@ -181,7 +188,7 @@ def calc_implied_volatility(s: float, k: float, t: float, r: float, premium: flo
         ImpVol = (Up_bound + Low_bound)/2
         return ImpVol
     else:
-        raise Exception('Error!')
+        raise Exception('Error! Implied Volatility is not in the range of 0 to 2. Please check premium input.')
 
 
 if __name__ == '__main__':
